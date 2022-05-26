@@ -6,7 +6,7 @@ untidy-data
 env.py
 
 # file extensions
-*.csv
+
 *.xlsx
 
 # hidden folders
