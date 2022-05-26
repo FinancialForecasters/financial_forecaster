@@ -3,13 +3,7 @@
 pull the latest 1000 candlestick entries from the binance api
 '''
 
-import sys
-local_path = '/Users/hinzlehome/codeup-data-science/binance-project/'
-sys.path.insert(0, local_path)
-from utils.imports import *
-# used for trouble shooting filepath issues
-# import os
-# print(os.getcwd())
+from imports import *
 
 def csv_btcusd():
 	if os.path.exists('BTC-USD.csv'):
@@ -66,4 +60,10 @@ def add_targets(df):
     df = df.dropna()
     
     return df
+
+def finance_df():
+	df=csv_btcusd()
+	df=pre_cleaning(df)
+	df=add_targets(df)
+	return model_btcusd(df)
 
