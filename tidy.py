@@ -22,8 +22,6 @@ def csv_btcusd():
 		return None
 
 def model_btcusd(df):
-	df.date=pd.to_datetime(df.date, utc=True)
-	df=df.set_index('date').sort_index()
 	# about 17 hours of data
 	train = df.loc[:'2017']
 	# train is 12 hours
@@ -37,6 +35,8 @@ def pre_cleaning(df):
 	drops=['Adj Close']
 	df=df.drop(labels=drops,axis=1)
 	df=df.rename(columns={'Date':'date','Open':'open','High':'high','Low':'low','Close':'close','Volume':'volume'})
+	df.date=pd.to_datetime(df.date, utc=True)
+	df=df.set_index('date').sort_index()
 	return df
 
 def btcusd():
