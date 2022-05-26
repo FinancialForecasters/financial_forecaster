@@ -67,3 +67,7 @@ def finance_df():
 	df=add_targets(df)
 	return model_btcusd(df)
 
+def explore_df():
+	df=csv_btcusd()
+	df=pre_cleaning(df)
+	return add_targets(df)
