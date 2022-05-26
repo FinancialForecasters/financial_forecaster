@@ -58,8 +58,8 @@ def get_outlier_thresholds(s, k):
     
     return lower, upper
 
-def add_features(df):
-    """ Adds target and additional features to dataframe. Returns dataframe with additional features """
+def add_targets(df):
+    """ Adds target to dataframe. Returns dataframe with additional features """
     ###### TARGETS ######
     # forward 1 day log returns
     df["fwd_log_ret"] = np.log(df.close.shift(-1)) - np.log(df.close)
@@ -70,6 +70,13 @@ def add_features(df):
     # binary positive vs negative next day return
     df["fwd_close_positive"] = df.fwd_ret>0
     
+    # drop any remaining nulls
+    df = df.dropna()
+    
+    return df
+    
+def add_legacy_features(df):
+    """ Adds legacy (from Jesse's original project) features to dataframe. Returns dataframe with additional features """
     ###### FEATURES ######
     # Pct change from yesterday
     df["pct_chg"] = df.close.pct_change()
