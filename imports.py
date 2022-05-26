@@ -2,7 +2,7 @@
 import sys
 local_path = '/Users/hinzlehome/codeup-data-science/binance-project/'
 sys.path.insert(0,local_path+'.env')
-from env import *
+
 
 
 # local-host
