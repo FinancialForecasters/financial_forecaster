@@ -52,12 +52,6 @@ import nltk
 from nltk.tokenize.toktok import ToktokTokenizer
 from nltk.corpus import stopwords
 
-# pyspark
-import pyspark
-import pyspark.sql.functions as F
-os.environ['PYSPARK_PYTHON'] = sys.executable
-os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
-
 # state properties
 np.random.seed(123)
 # pd.set_option("display.max_columns", None)
