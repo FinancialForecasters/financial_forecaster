@@ -23,11 +23,11 @@ def csv_btcusd():
 
 def model_btcusd(df):
 	# about 17 hours of data
-	train = df.loc[:'2017']
+	train = df.loc[:'2022-3-22']
 	# train is 12 hours
-	validate =df.loc['2018':'2021'] 
+	validate =df.loc['2022-03-23':'2022-04-24'] 
 	# validate is 3 hours
-	test = df.loc['2021':]
+	test = df.loc['2022-04-25':]
 	#test is ~2 hours
 	return train, validate, test
 
