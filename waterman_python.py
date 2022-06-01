@@ -40,6 +40,34 @@ def time_features(df):
     return df
 
 
+df = tidy.csv_btcusd()
+df = tidy.pre_cleaning(df)
+df = tidy.add_targets(df)
+
+df = time_features(df)
+
+df_circ = pd.read_csv('circulation_btc.csv')
+
+# df_circ.Timestamp to datetime object
+df_circ['Timestamp'] = pd.to_datetime(df_circ['Timestamp'], utc=True)
+# df_circ.Timestamp as index
+df_circ = df_circ.set_index('Timestamp')
+# Mean index by day
+df_circ = df_circ.resample('D').mean()
+# Add to df
+df = df.join(df_circ)
+# Drop NaN
+df = df.dropna()
+# Add a new column of change in total_bitcoin between today and yesterday
+df['flow'] = df['total-bitcoins'] - df['total-bitcoins'].shift(1)
+# Add a new column that is the daily df.total-bitcoins to df.flow ratio
+df['stock_flow_ratio'] = df['flow'] / df['total-bitcoins']
+# Column for if stock_flow_ratio of today went up or down from yesterday
+df['stock_flow_ratio_change'] = df['stock_flow_ratio'].shift(1) - df['stock_flow_ratio']
+
+
+
+
 
 
 
