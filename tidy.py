@@ -36,6 +36,7 @@ def pre_cleaning(df):
 	df=df.drop(labels=drops,axis=1)
 	df=df.rename(columns={'Date':'date','Open':'open','High':'high','Low':'low','Close':'close','Volume':'volume'})
 	df.date=pd.to_datetime(df.date, utc=True)
+	# df.date=df.date.strftime('%Y-%m-%d')
 	df=df.set_index('date').sort_index()
 	return df
 
