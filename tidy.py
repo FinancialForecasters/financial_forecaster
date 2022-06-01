@@ -71,3 +71,23 @@ def explore_df():
 	df=csv_btcusd()
 	df=pre_cleaning(df)
 	return add_targets(df)
+
+
+# def t_test_month(df):
+# 	'''
+	
+# 	'''
+# 	# H0: Mean of {day_name} fwd_log_ret <= mean of all fwd_log_ret
+# 	# HA: Mean of {day_name} fwd_log_ret > mean of all fwd_log_ret
+#     alpha = .05
+#     overall_mean = df.fwd_log_ret.mean()
+# 	to_encode = []
+#     for m in df.index.month.unique():
+#         day_sample = df[df.index.month == m].fwd_log_ret
+#         t, p = stats.ttest_1samp(day_sample, overall_mean)
+#         if p/2 > alpha:
+#             continue
+#         elif t < 0:
+#             continue
+#         else:
+            
