@@ -62,6 +62,26 @@ def add_targets(df):
     
     return df
 
+def add_ATR_feature(df):
+    """Adds columns with boolean of whether current and historical ATR 
+    is greater than the ATR threshold (percentage)"""
+    
+    df_calc = df.copy()
+
+    # Calculate the 14 day ATR and add it as column to df
+    df_calc['ATR_14'] = ATR(df_calc.high, df_calc.low, df_calc.close, 14)
+    # Calculate the rolling 14 day average of ATR and add it as column to df
+    df_calc['avg_atr_14'] = df_calc.ATR_14.rolling(14).mean()
+    # Calculate the percentage current 14 day ATR is above/below the rolling mean
+    df_calc['atr_vs_historical'] = (df_calc.ATR_14 - df_calc.avg_atr_14)/df_calc.avg_atr_14
+    
+    thresholds_to_add = [0.01, 0.05, 0.1, 0.2, 0.3]
+    
+    for threshold in thresholds_to_add:
+        df[f'atr_above_threshold_{threshold}'] = df_calc.atr_vs_historical>threshold
+    
+    return df
+
 def finance_df():
 	df=csv_btcusd()
 	df=pre_cleaning(df)
