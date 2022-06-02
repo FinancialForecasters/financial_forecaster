@@ -34,11 +34,11 @@ High | highest price during 1 minute interval
 Low | highest price during 1 minute interval
 Close | price at close
 Volume | number of $USD traded during 1 minute interval
-Close time | time candlestick closed
-Quote asset volume | n/a
-Number of trades | n/a
-Taker buy base asset volume | n/a
-Taker buy quote asset volume | n/a
+atr_above_threshold_0.01 | True when today's ATR is above the historical (14 day) average ATR by the given threshold (0.01)
+atr_above_threshold_0.05 | True when today's ATR is above the historical (14 day) average ATR by the given threshold (0.05)
+atr_above_threshold_0.1 | True when today's ATR is above the historical (14 day) average ATR by the given threshold (0.1)
+atr_above_threshold_0.2 | True when today's ATR is above the historical (14 day) average ATR by the given threshold (0.2)
+atr_above_threshold_0.3 | True when today's ATR is above the historical (14 day) average ATR by the given threshold (0.3)
 Ignore | n/a
 
 Example data entry:
