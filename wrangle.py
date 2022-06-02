@@ -9,7 +9,6 @@ def wrangle_df():
     df = tidy.explore_df()
     # Adding macd engineered features
     df = tidy.macd_df(df)
-    df = df.dropna()
     # Adding time engineered features
     df = tidy.time_features(df)
     # Adding atr feature
