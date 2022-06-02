@@ -68,9 +68,3 @@ df['stock_flow_ratio_change'] = df['stock_flow_ratio'].shift(1) - df['stock_flow
 
 
 
-
-
-
-
-
-
