@@ -17,7 +17,8 @@ def wrangle_df():
     df = tidy.add_miner_features(df)
     # Drop nulls
     df = df.dropna()
-
+    # Convert index of df to datetime
+    df.index = pd.to_datetime(df.index)
     # Return df
     return df
 
