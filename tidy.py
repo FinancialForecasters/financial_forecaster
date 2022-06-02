@@ -1,4 +1,3 @@
-# acquire.py
 '''
 pull the latest 1000 candlestick entries from the binance api
 '''
@@ -301,4 +300,13 @@ def macd_df(df):
     macker=macker.rename({0:'cross',1:'histy'},axis=1)
 
     return macker
-    
+
+def split_i(df):
+	train = df.loc[:'2022-3-22']
+	validate =df.loc['2022-03-23':'2022-04-23'] 
+	return train, validate
+
+def split_ii(df):
+	train = df.loc[:'2022-04-24']
+	test = df.loc['2022-04-25':]
+	return train, test
