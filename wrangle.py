@@ -15,6 +15,8 @@ def wrangle_df():
     df = tidy.add_ATR_feature(df)
     # Adding miner features
     df = tidy.add_miner_features(df)
+    # Drop nulls
+    df = df.dropna()
 
     # Return df
     return df
