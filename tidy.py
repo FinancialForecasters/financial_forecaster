@@ -297,7 +297,7 @@ def macd_df(df):
     list=pd.Series(list, index=mac.index)
 
     # crossover indicator
-    macker=pd.concat([mac,list,not_list],axis=1)
+    macker=pd.concat([df,list,not_list],axis=1)
     macker=macker.rename({0:'cross',1:'histy'},axis=1)
 
     return macker
