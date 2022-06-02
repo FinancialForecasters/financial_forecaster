@@ -260,39 +260,41 @@ def time_features(df):
     return df
 
 def macd_df(df):
-	'''
-	macd encoder
-	'''
-	macd, signal, histo = talib.MACD(df.close,fastperiod=12, slowperiod=26, signalperiod=9)
-	mac=pd.concat([df,macd,signal,histo],axis=1)
-	mac=mac.rename(columns={0:'macd',1:'signal',2:'histo'})
-	mac=mac.drop(mac[mac.index<'2014-10-20'].index)
-	mac=mac.fillna(0)
-	cools=mac.histo>0
-	start=cools[0]
-	not_list=[]
+    '''
+    macd encoder
+    '''
 
-	for x in cools:
-		if x:
-			not_list.append(1)
-		else:
-			not_list.append(0)
+    macd, signal, histo = talib.MACD(df.close,fastperiod=12, slowperiod=26, signalperiod=9)
+    mac=pd.concat([df,macd,signal,histo],axis=1)
+    mac=mac.rename(columns={0:'macd',1:'signal',2:'histo'})
+    mac=mac.drop(mac[mac.index<'2014-10-20'].index)
+    mac=mac.fillna(0)
+    cools=mac.histo>0
+    start=cools[0]
+    not_list=[]
 
-	not_list=pd.Series(not_list, index=mac.index)
-	bools=mac.macd>mac.signal
-	yesterday=bools[0]
-	list=[]
+    for x in cools:
+        if x:
+            not_list.append(1)
+        else:
+            not_list.append(0)
 
-	for today in bools:
-		if today==yesterday:
-			list.append(0)
-			continue
-		else:
-			list.append(1)
-			yesterday=today
+    not_list=pd.Series(not_list, index=mac.index)
+    bools=mac.macd>mac.signal
+    yesterday=bools[0]
+    list=[]
 
-	list=pd.Series(list, index=mac.index)
+    for today in bools:
+        if today==yesterday:
+            list.append(0)
+            continue
+        else:
+            list.append(1)
+            yesterday=today
 
-	# crossover indicator
-	macker=pd.concat([mac.close,list,not_list],axis=1)
-	macker=macker.rename({0:'cross',1:'histy'},axis=1)
+    list=pd.Series(list, index=mac.index)
+
+    # crossover indicator
+    macker=pd.concat([mac.close,list,not_list],axis=1)
+    macker=macker.rename({0:'cross',1:'histy'},axis=1)
+
