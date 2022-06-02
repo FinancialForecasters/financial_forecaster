@@ -4,6 +4,7 @@ pull the latest 1000 candlestick entries from the binance api
 '''
 
 from imports import *
+from talib import atr
 
 def csv_btcusd():
 	if os.path.exists('BTC-USD.csv'):
@@ -204,4 +205,75 @@ def prepare_df(df, column, extra_words = [], exclude_words = []):
     df['stemmed_word_count'] = df.stemmed.str.split().str.len()
     df['lemmatized_word_count'] = df.lemmatized.str.split().str.len()
 
+    return df
+
+## Miner features aka AJ Features
+
+def add_csv(df, filename):
+    '''
+    This fuction will add a csv data to the main dataframe
+    '''
+    # read the CSV file and assign a variable
+    filename_df = pd.read_csv(f'~/codeup-data-science/financial_forecaster/project_csvs/{filename}.csv')
+    # change dtype of timestamp into pandas date
+    filename_df.Timestamp = pd.to_datetime(filename_df.Timestamp).dt.date
+    # reset index to datetime
+    filename_df = filename_df.set_index('Timestamp').sort_index()
+    # reset index to datetime for dataframe
+    df.index = pd.to_datetime(df.index)
+    # add the CSV_dataframe to given dataframe
+    df[filename] = filename_df
+    # fill the nulls
+    df.fillna(method='ffill', inplace=True)
+    # retunrs a dataframe
+    return df
+
+def add_miner_features(df):  
+    '''
+    This functino will add all the miner CSVs to a main dataframe
+    '''
+    # add all the CSV files to a variable
+    csv_filenames = ['avg-fees-per-transaction', 'cost-per-transaction-percent', 'cost-per-transaction', 'difficulty', 'hash-rate', 'miners-revenue', 'transaction-fees-to-miners']
+    # loop each CSV into the dataframe using add_cvs function
+    for filename in csv_filenames:
+        add_csv(df, filename)
+    # return df
+    return df
+
+def time_features(df):
+    '''
+    This function adds time features to the dataframe based on statistical significance with the target variable.
+    '''
+    alpha = .05
+    overall_mean = df.fwd_log_ret.mean()
+    # Obtaining stastistically significant month for increase or decrease in fwd_log_ret
+    to_encode_month = []
+    for m in df.index.month.unique():
+        month_sample = df[df.index.month == m].fwd_log_ret
+        t, p = stats.ttest_1samp(month_sample, overall_mean)
+        if p/2 > alpha:
+            continue
+        else:
+            to_encode_month.append(m)
+    for m in to_encode_month:
+        df['month_'+str(m)] = df.index.month == m
+    
+    # Obtaining statistically significant day of month for increase or decrease in fwd_log_ret
+    to_encode_day = []
+    for d in df.index.day.unique():
+        day_sample = df[df.index.day == d].fwd_log_ret
+        t, p = stats.ttest_1samp(day_sample, overall_mean)
+        if p/2 > alpha:
+            continue
+        else:
+            to_encode_day.append(d)
+    for d in to_encode_day:
+        df['day_'+str(d)] = df.index.day == d
+
+    # Converting boolean features to ints
+    for col in df.columns:
+        if df[col].dtype == bool:
+            df[col] = df[col].astype(int)
+
+    # Return df
     return df
