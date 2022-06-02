@@ -202,6 +202,8 @@ def add_csv(df, filename):
     filename_df = filename_df.set_index('Timestamp').sort_index()
     # reset index to datetime for dataframe
     df.index = pd.to_datetime(df.index)
+    # remove times to index
+    df.index = df.index.date
     # add the CSV_dataframe to given dataframe
     df[filename] = filename_df
     # fill the nulls
