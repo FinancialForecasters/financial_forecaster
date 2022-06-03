@@ -1,22 +1,24 @@
 # Binance Project
 
 ## Table of Contents
-- [Project Goal](#project-goal)
-- [Project Description](#project-description)
-- [How to Reproduce](#how-to-reproduce)
-- [Initial Questions](#initial-questions)
-- [Data Dictionary](#data-dictionary)
-- [Project Plan](#project-plan)
-    - [Imports](#imports)
-    - [Acquisition](#acquisition)
-    - [Preparation](#preparation)
-    - [Exploration](#exploration)
-    - [Forecasting and Modeling](#forecasting-and-modeling)
+- [Binance Project](#binance-project)
+  - [Table of Contents](#table-of-contents)
+  - [Project Goal](#project-goal)
+  - [Project Description](#project-description)
+  - [How to Reproduce](#how-to-reproduce)
+  - [Initial Questions](#initial-questions)
+  - [Data Dictionary](#data-dictionary)
+  - [Project Plan](#project-plan)
+    - [1. Imports](#1-imports)
+    - [2. Acquisition](#2-acquisition)
+    - [3. Preparation](#3-preparation)
+    - [4. Exploration](#4-exploration)
+    - [5. Forecasting and Modeling](#5-forecasting-and-modeling)
     - [Deliverables](#deliverables)
     - [Final Report](#final-report)
-- [Key Findings](#key-findings)
-- [Recommendations](#recommendations)
-- [Next Steps](#next-steps)
+  - [Key Findings](#key-findings)
+  - [Recommendations](#recommendations)
+  - [Next Steps](#next-steps)
 
 
 ## Project Goal
@@ -95,24 +97,6 @@ difficulty |
 hash-rate |
 miners-revenue |
 transaction-fees-to-miners |
-
-Example data entry:
-
-```text
-1499040000000,      // Open time
-"0.00386200",       // Open
-"0.00386200",       // High
-"0.00386200",       // Low
-"0.00386200",       // Close
-"0.47000000",  // Volume
-1499644799999,      // Close time
-"0.00181514",    // Quote asset volume
-1,                // Number of trades
-"0.47000000",    // Taker buy base asset volume
-"0.00181514",      // Taker buy quote asset volume
-"0" // Ignore.
-
-```
 
 ## Project Plan
 
