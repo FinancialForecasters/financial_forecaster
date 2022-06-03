@@ -310,3 +310,45 @@ def split_ii(df):
 	train = df.loc[:'2022-04-24']
 	test = df.loc['2022-04-25':]
 	return train, test
+
+def perform_ATR_analysis(df, atr_threshold  = 0.05, make_plots = True, alpha = 0.05):
+    """Performs analysis of returns based on current vs historical ATR.
+    
+    If the difference in current and historical ATR is greater than the ATR threshold (percentage)"""
+
+    # Calculate the 14 day ATR and add it as column to df
+    df['ATR_14'] = ATR(df.high, df.low, df.close, 14)
+    # Calculate the rolling 14 day average of ATR and add it as column to df
+    df['avg_atr_14'] = df.ATR_14.rolling(14).mean()
+    # Calculate the percentage current 14 day ATR is above/below the rolling mean
+    df['atr_vs_historical'] = (df.ATR_14 - df.avg_atr_14)/df.avg_atr_14
+
+    if make_plots:
+    # Plot ATR 14 and close price
+        fig, ax = plt.subplots(2,1,sharex=True)
+        df.close.plot(ax = ax[0])
+        ax[0].set_title('Close price of BTC')
+        df.avg_atr_14.plot(ax = ax[1])
+        ax[1].set_title('Rolling 14 day average of 14 day ATR')
+
+    df['atr_above_threshold'] = df.atr_vs_historical>atr_threshold
+
+    print(f"Percentage of observations above threshold: {df.atr_above_threshold.mean():.2%}")
+    
+    avg_return_above_threshold = round(df[df.atr_above_threshold].fwd_log_ret.mean(),6)
+    
+    print(f"Average next day return when ATR above threshold: {avg_return_above_threshold}")
+    
+    print(f"which is: {round(df[df.atr_above_threshold].fwd_log_ret.mean()/df.fwd_log_ret.mean(),3)} times overall average")
+    
+    # Perform one sample t-test -> is the average return of the high volatility days significantly greater than overall mean?
+    
+    t,p = stats.ttest_1samp(df[df.atr_above_threshold].fwd_log_ret, df.fwd_log_ret.mean())
+    
+    if ((t>0)&(p/2<alpha)):
+        print("Results significant!: t is >0",t>0,"p/2 < alpha",p<alpha)
+    else:
+        print("Fail to reject null hypothesis")
+        
+    return avg_return_above_threshold
+    
