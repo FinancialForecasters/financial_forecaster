@@ -317,7 +317,7 @@ def perform_ATR_analysis(df, atr_threshold  = 0.05, make_plots = True, alpha = 0
     If the difference in current and historical ATR is greater than the ATR threshold (percentage)"""
 
     # Calculate the 14 day ATR and add it as column to df
-    df['ATR_14'] = ATR(df.high, df.low, df.close, 14)
+    df['ATR_14'] = talib.ATR(df.high, df.low, df.close, 14)
     # Calculate the rolling 14 day average of ATR and add it as column to df
     df['avg_atr_14'] = df.ATR_14.rolling(14).mean()
     # Calculate the percentage current 14 day ATR is above/below the rolling mean
