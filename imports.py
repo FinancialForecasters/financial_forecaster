@@ -47,10 +47,13 @@ import talib
 # beautifulsoup
 from bs4 import BeautifulSoup
 
-#natural language toolkit
+# natural language toolkit
 import nltk
 from nltk.tokenize.toktok import ToktokTokenizer
 from nltk.corpus import stopwords
+
+# facebook prophet
+from prophet import Prophet
 
 # state properties
 np.random.seed(123)
