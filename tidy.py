@@ -428,3 +428,60 @@ def add_obv_feature(df, rolling_period = 30):
     df['obv_close_product'] = obv_ind_df.obv_close_product
     
     return df
+
+
+
+def scrape_tweets(start_date= '2022-03-06', end_date = '2022-03-07', final_end_date = '2022-06-03', search_query = '#bitcoin', num_tweets_day = 100):
+    """ Scrapes historical Tweets from Twitter using snscrape library. Returns dataframe of Tweets.
+    start_date: date to start scraping from (YYYY-MM-DD)
+    end_date: usually just the day after start_date (YYYY-MM-DD)
+    final_end_date: last day to scrape
+    search query: string representing search query (#....)
+    num_tweets_day: number of tweets to scrape per day
+    """
+    
+    # Creating list to append tweet data to
+    tweets_list2 = []
+    all_tweets = {}
+    # Using TwitterSearchScraper to scrape data and append tweets to list
+    # set initial start and end date for day by day scraping
+    start_date = start_date
+    end_date = end_date
+    final_end_date = final_end_date
+    
+    # iterate through each day until reach final end date
+    while start_date < final_end_date:
+        print('scraping...',start_date, end_date)
+        tweets_list2 = []
+        for i,tweet in enumerate(sntwitter.TwitterSearchScraper(f'{search_query} since:{start_date} until:{end_date}').get_items()):
+            print(i, end = "\r")
+            if i>num_tweets_day:
+                break
+            tweets_list2.append([tweet.date, tweet.id, tweet.content, tweet.user.username])
+
+        # Add day's tweets to dictionary    
+        all_tweets[start_date] = (tweets_list2)
+        
+        # increment and change string representation of date
+        start_date = datetime.strptime(start_date, '%Y-%m-%d') + timedelta(days=1)
+        end_date = start_date + timedelta(days=1)
+        start_date = datetime.strftime(start_date,'%Y-%m-%d')
+        end_date = datetime.strftime(end_date,'%Y-%m-%d')
+        print(start_date, final_end_date)
+
+    # Creating a dataframe from the tweets list above
+    tweets_df2 = pd.DataFrame(tweets_list2, columns=['Datetime', 'Tweet Id', 'Text', 'Username'])
+    tweets_df2.index = pd.to_datetime(tweets_df2.Datetime)
+    tweets_df2 = tweets_df2.sort_index()
+    
+    return all_tweets
+
+def move_tweets_to_csv(all_tweets, filepath = './csv/tweets.csv'):
+    """Saves all_tweets to a csv"""
+    temp_df = pd.DataFrame()
+    for key in all_tweets.keys():
+        that_day = pd.DataFrame(all_tweets[key], columns = ['time','user','text','username'])
+        temp_df = pd.concat([temp_df, that_day])
+        
+    temp_df.to_csv(filepath)
+    print(f"Tweets saved to csv at {filepath}")
