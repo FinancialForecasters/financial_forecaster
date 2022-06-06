@@ -388,3 +388,100 @@ def add_twitter_sentiment(df, filepath = './project_csvs/twitter_sentiment_btc.c
     df = pd.concat([df, twitter_sentiment], axis = 1)
     
     return df
+
+def add_obv_feature(df, rolling_period = 30):
+    """ Adds On Balance Volume derived feature, called obv_close_product to dataframe.
+    This feature incorporates volume and price change to determine the cumulative positive and negative volume.
+    
+    Per Investopedia the feature can be used to confirm price movements:
+    -If close price is near the rolling period high and OBV is near the 30 day high the obv_close_product will be close to 1, signaling an upward confirmation
+    -If close price is near the rolling period low and OBV is near the 30 day low the obv_close_product will be close to 0, signaling a downward confirmation
+    -If close price is near the rolling period high but OBV is near the 30 day low the obv_close_product will show a value between 0-1, implying indecision
+    """
+    
+    obv_ind_df = df.copy()
+
+    # Calculate On Balance Volume, which is the cumulative volume 
+    obv_ind_df['obv'] = talib.OBV(df.close, df.volume)
+
+    # Calculate the rolling 30 day max and min of OBV
+    obv_ind_df['obv_period_max'] = obv_ind_df.obv.rolling(rolling_period, min_periods=0).max()
+    obv_ind_df['obv_period_min'] = obv_ind_df.obv.rolling(rolling_period, min_periods=0).min()
+
+    # Calculate the rolling 30 day max and min close
+    obv_ind_df['close_period_max'] = obv_ind_df.close.rolling(rolling_period, min_periods=0).max()
+    obv_ind_df['close_period_min'] = obv_ind_df.close.rolling(rolling_period, min_periods=0).min()
+
+    # Create OBV convergence/divergence indicator 
+    # Calculate the position of the close within the rolling n- day min and max of close
+    obv_ind_df['close_within_n_period_channel'] = (obv_ind_df.close-obv_ind_df.close_period_min)/(obv_ind_df.close_period_max-obv_ind_df.close_period_min)
+
+    # Calculate the position of the OBV within the rolling n-day min and max of obv
+    obv_ind_df['obv_within_n_period_channel'] = (obv_ind_df.obv-obv_ind_df.obv_period_min)/(obv_ind_df.obv_period_max-obv_ind_df.obv_period_min)
+
+    # Calculate product of close position within channel and obv position within channel
+    # Values closer to 1 indicate confirmation of higher prices
+    # Values close to 0 indicate confirmation of lower prices
+    # Values between 0.1-0.9 would indicate indecision/mismatch between volume and price movement
+    obv_ind_df['obv_close_product'] = (obv_ind_df.close_within_n_period_channel*obv_ind_df.obv_within_n_period_channel)
+    
+    df['obv_close_product'] = obv_ind_df.obv_close_product
+    
+    return df
+
+
+
+def scrape_tweets(start_date= '2022-03-06', end_date = '2022-03-07', final_end_date = '2022-06-03', search_query = '#bitcoin', num_tweets_day = 100):
+    """ Scrapes historical Tweets from Twitter using snscrape library. Returns dataframe of Tweets.
+    start_date: date to start scraping from (YYYY-MM-DD)
+    end_date: usually just the day after start_date (YYYY-MM-DD)
+    final_end_date: last day to scrape
+    search query: string representing search query (#....)
+    num_tweets_day: number of tweets to scrape per day
+    """
+    
+    # Creating list to append tweet data to
+    tweets_list2 = []
+    all_tweets = {}
+    # Using TwitterSearchScraper to scrape data and append tweets to list
+    # set initial start and end date for day by day scraping
+    start_date = start_date
+    end_date = end_date
+    final_end_date = final_end_date
+    
+    # iterate through each day until reach final end date
+    while start_date < final_end_date:
+        print('scraping...',start_date, end_date)
+        tweets_list2 = []
+        for i,tweet in enumerate(sntwitter.TwitterSearchScraper(f'{search_query} since:{start_date} until:{end_date}').get_items()):
+            print(i, end = "\r")
+            if i>num_tweets_day:
+                break
+            tweets_list2.append([tweet.date, tweet.id, tweet.content, tweet.user.username])
+
+        # Add day's tweets to dictionary    
+        all_tweets[start_date] = (tweets_list2)
+        
+        # increment and change string representation of date
+        start_date = datetime.strptime(start_date, '%Y-%m-%d') + timedelta(days=1)
+        end_date = start_date + timedelta(days=1)
+        start_date = datetime.strftime(start_date,'%Y-%m-%d')
+        end_date = datetime.strftime(end_date,'%Y-%m-%d')
+        print(start_date, final_end_date)
+
+    # Creating a dataframe from the tweets list above
+    tweets_df2 = pd.DataFrame(tweets_list2, columns=['Datetime', 'Tweet Id', 'Text', 'Username'])
+    tweets_df2.index = pd.to_datetime(tweets_df2.Datetime)
+    tweets_df2 = tweets_df2.sort_index()
+    
+    return all_tweets
+
+def move_tweets_to_csv(all_tweets, filepath = './csv/tweets.csv'):
+    """Saves all_tweets to a csv"""
+    temp_df = pd.DataFrame()
+    for key in all_tweets.keys():
+        that_day = pd.DataFrame(all_tweets[key], columns = ['time','user','text','username'])
+        temp_df = pd.concat([temp_df, that_day])
+        
+    temp_df.to_csv(filepath)
+    print(f"Tweets saved to csv at {filepath}")
