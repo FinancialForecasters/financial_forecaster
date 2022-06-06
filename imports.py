@@ -52,9 +52,6 @@ import nltk
 from nltk.tokenize.toktok import ToktokTokenizer
 from nltk.corpus import stopwords
 
-# facebook prophet
-from prophet import Prophet
-
 # state properties
 np.random.seed(123)
 # pd.set_option("display.max_columns", None)
