@@ -370,3 +370,21 @@ def add_df_circ(df):
     df['stock_flow_ratio_change'] = df['stock_flow_ratio'].shift(1) - df['stock_flow_ratio']
     return df
 
+
+def add_twitter_sentiment(df, filepath = './project_csvs/twitter_sentiment_btc.csv'):
+    """ Adds the Twitter Sentiment (average per day) to the prices df """
+    
+    # read twitter data from csv
+    twitter_sentiment = pd.read_csv(filepath, index_col = 0)
+    
+    # Converts index to datetime index
+    twitter_sentiment.index = pd.to_datetime(twitter_sentiment.index)
+    
+    # Time not needed, pull out date for joined to prices/other features df
+    twitter_sentiment.index = twitter_sentiment.index.date
+    
+    df = df.copy()
+    
+    df = pd.concat([df, twitter_sentiment], axis = 1)
+    
+    return df
