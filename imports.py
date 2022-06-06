@@ -23,11 +23,12 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import SelectKBest, RFE, f_regression
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression, LinearRegression, LassoLars, TweedieRegressor
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, TimeSeriesSplit
 from sklearn.naive_bayes import BernoulliNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, QuantileTransformer, PolynomialFeatures
 from sklearn.tree import DecisionTreeClassifier, plot_tree, export_text
+
 
 # visualizations
 from pandas.plotting import register_matplotlib_converters
@@ -47,13 +48,18 @@ import talib
 # beautifulsoup
 from bs4 import BeautifulSoup
 
+# snsscrape
+# import snscrape.modules.twitter as sntwitter
+
+# datetime
+from datetime import datetime, timedelta
+
+
 # natural language toolkit
 import nltk
+import nltk.sentiment
 from nltk.tokenize.toktok import ToktokTokenizer
 from nltk.corpus import stopwords
-
-# facebook prophet
-from prophet import Prophet
 
 # state properties
 np.random.seed(123)
