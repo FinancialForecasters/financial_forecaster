@@ -352,3 +352,21 @@ def perform_ATR_analysis(df, atr_threshold  = 0.05, make_plots = True, alpha = 0
         
     return avg_return_above_threshold
     
+
+def add_df_circ(df):
+    '''
+    This function adds in circulation information and engineers stock-flow features on a day to day change.
+    '''
+    df_circ = pd.read_csv('circulation_btc.csv')
+    df_circ['Timestamp'] = pd.to_datetime(df_circ['Timestamp'])
+    df_circ = df_circ.set_index('Timestamp')
+    df_circ = df_circ.resample('D').mean()
+    df = df.join(df_circ)
+    
+    df['flow'] = df['total-bitcoins'] - df['total-bitcoins'].shift(1)
+    # Add a new column that is the daily df.total-bitcoins to df.flow ratio
+    df['stock_flow_ratio'] = df['flow'] / df['total-bitcoins']
+    # Column for if stock_flow_ratio of today went up or down from yesterday
+    df['stock_flow_ratio_change'] = df['stock_flow_ratio'].shift(1) - df['stock_flow_ratio']
+    return df
+
