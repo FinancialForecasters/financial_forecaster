@@ -49,7 +49,7 @@ import talib
 from bs4 import BeautifulSoup
 
 # snsscrape
-import snscrape.modules.twitter as sntwitter
+# import snscrape.modules.twitter as sntwitter
 
 # datetime
 from datetime import datetime, timedelta
