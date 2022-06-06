@@ -388,3 +388,43 @@ def add_twitter_sentiment(df, filepath = './project_csvs/twitter_sentiment_btc.c
     df = pd.concat([df, twitter_sentiment], axis = 1)
     
     return df
+
+def add_obv_feature(df, rolling_period = 30):
+    """ Adds On Balance Volume derived feature, called obv_close_product to dataframe.
+    This feature incorporates volume and price change to determine the cumulative positive and negative volume.
+    
+    Per Investopedia the feature can be used to confirm price movements:
+    -If close price is near the rolling period high and OBV is near the 30 day high the obv_close_product will be close to 1, signaling an upward confirmation
+    -If close price is near the rolling period low and OBV is near the 30 day low the obv_close_product will be close to 0, signaling a downward confirmation
+    -If close price is near the rolling period high but OBV is near the 30 day low the obv_close_product will show a value between 0-1, implying indecision
+    """
+    
+    obv_ind_df = df.copy()
+
+    # Calculate On Balance Volume, which is the cumulative volume 
+    obv_ind_df['obv'] = talib.OBV(df.close, df.volume)
+
+    # Calculate the rolling 30 day max and min of OBV
+    obv_ind_df['obv_period_max'] = obv_ind_df.obv.rolling(rolling_period, min_periods=0).max()
+    obv_ind_df['obv_period_min'] = obv_ind_df.obv.rolling(rolling_period, min_periods=0).min()
+
+    # Calculate the rolling 30 day max and min close
+    obv_ind_df['close_period_max'] = obv_ind_df.close.rolling(rolling_period, min_periods=0).max()
+    obv_ind_df['close_period_min'] = obv_ind_df.close.rolling(rolling_period, min_periods=0).min()
+
+    # Create OBV convergence/divergence indicator 
+    # Calculate the position of the close within the rolling n- day min and max of close
+    obv_ind_df['close_within_n_period_channel'] = (obv_ind_df.close-obv_ind_df.close_period_min)/(obv_ind_df.close_period_max-obv_ind_df.close_period_min)
+
+    # Calculate the position of the OBV within the rolling n-day min and max of obv
+    obv_ind_df['obv_within_n_period_channel'] = (obv_ind_df.obv-obv_ind_df.obv_period_min)/(obv_ind_df.obv_period_max-obv_ind_df.obv_period_min)
+
+    # Calculate product of close position within channel and obv position within channel
+    # Values closer to 1 indicate confirmation of higher prices
+    # Values close to 0 indicate confirmation of lower prices
+    # Values between 0.1-0.9 would indicate indecision/mismatch between volume and price movement
+    obv_ind_df['obv_close_product'] = (obv_ind_df.close_within_n_period_channel*obv_ind_df.obv_within_n_period_channel)
+    
+    df['obv_close_product'] = obv_ind_df.obv_close_product
+    
+    return df
