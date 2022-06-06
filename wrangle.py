@@ -15,6 +15,8 @@ def wrangle_df():
     df = tidy.add_ATR_feature(df)
     # Adding miner features
     df = tidy.add_miner_features(df)
+    # Adding Twitter sentiment data
+    df = tidy.add_twitter_sentiment(df)
     # Drop nulls
     df = df.dropna()
     # Convert index of df to datetime
