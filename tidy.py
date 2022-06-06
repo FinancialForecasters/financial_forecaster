@@ -20,29 +20,16 @@ def csv_btcusd():
 		# return btcusd_df
 		return None
 
-def model_btcusd(df):
-	# about 17 hours of data
-	train = df.loc[:'2022-3-22']
-	# train is 12 hours
-	validate =df.loc['2022-03-23':'2022-04-24'] 
-	# validate is 3 hours
-	test = df.loc['2022-04-25':]
-	#test is ~2 hours
-	return train, validate, test
-
 def pre_cleaning(df):
-	drops=['Adj Close']
-	df=df.drop(labels=drops,axis=1)
-	df=df.rename(columns={'Date':'date','Open':'open','High':'high','Low':'low','Close':'close','Volume':'volume'})
-	df.date=pd.to_datetime(df.date, utc=True)
-	# df.date=df.date.strftime('%Y-%m-%d')
-	df=df.set_index('date').sort_index()
-	return df
-
-def btcusd():
-	df=tidy_btcusd()
-	df=pre_cleaning(df)
-	return model_btcusd(df)
+    drops=['Adj Close']
+    df=df.drop(labels=drops,axis=1)
+    df=df.rename(columns={'Date':'date','Open':'open','High':'high','Low':'low','Close':'close','Volume':'volume'})
+    # remove times to index
+    df=df.set_index('date').sort_index()
+    df.index=pd.to_datetime(df.index, utc=True)
+    # df.date=df.date.strftime('%Y-%m-%d')
+    df.index = df.index.date
+    return df
 
 def add_targets(df):
     """ Adds target to dataframe. Returns dataframe with additional features """
