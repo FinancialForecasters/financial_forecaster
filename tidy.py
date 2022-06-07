@@ -180,7 +180,7 @@ def add_csv(df, filename):
     This fuction will add a csv data to the main dataframe
     '''
     # read the CSV file and assign a variable
-    filename_df = pd.read_csv(f'/Users/hinzlehome/codeup-data-science/financial_forecaster/project_csvs/{filename}.csv')
+    filename_df = pd.read_csv(f'~/codeup-data-science/financial_forecaster/project_csvs/{filename}.csv')
     # change dtype of timestamp into pandas date
     filename_df.Timestamp = pd.to_datetime(filename_df.Timestamp).dt.date
     # reset index to datetime
