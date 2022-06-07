@@ -24,11 +24,9 @@ def pre_cleaning(df):
     drops=['Adj Close']
     df=df.drop(labels=drops,axis=1)
     df=df.rename(columns={'Date':'date','Open':'open','High':'high','Low':'low','Close':'close','Volume':'volume'})
-    # remove times to index
+    df.date=pd.to_datetime(df.date)
     df=df.set_index('date').sort_index()
-    df.index=pd.to_datetime(df.index, utc=True)
     # df.date=df.date.strftime('%Y-%m-%d')
-    df.index = df.index.date
     return df
 
 def add_targets(df):
@@ -181,7 +179,7 @@ def add_csv(df, filename):
     This fuction will add a csv data to the main dataframe
     '''
     # read the CSV file and assign a variable
-    filename_df = pd.read_csv(f'~/codeup-data-science/financial_forecaster/project_csvs/{filename}.csv')
+    filename_df = pd.read_csv(f'/Users/hinzlehome/codeup-data-science/financial_forecaster/project_csvs/{filename}.csv')
     # change dtype of timestamp into pandas date
     filename_df.Timestamp = pd.to_datetime(filename_df.Timestamp).dt.date
     # reset index to datetime
