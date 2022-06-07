@@ -209,6 +209,45 @@ def add_miner_features(df):
     # return df
     return df
 
+## Miner Features for last 3 years
+def add_csv_3yr(df, filename):
+    '''
+    This fuction will add a csv data to the main dataframe
+    '''
+    # read the CSV file and assign a variable
+    print(f'reading {filename}')
+    filename_df = pd.read_csv(f'~/codeup-data-science/financial_forecaster/project_csvs/{filename}.csv')
+    # change dtype of timestamp into pandas date
+    filename_df.Timestamp = pd.to_datetime(filename_df.Timestamp).dt.date
+    # reset index to datetime
+    filename_df = filename_df.set_index('Timestamp').sort_index()
+    filename_df.columns = [filename]
+    # reset index to datetime for dataframe
+    df.index = pd.to_datetime(df.index)
+    # remove times to index
+    df.index = df.index.date
+    # add the CSV_dataframe to given dataframe
+    df = df.join(filename_df, how='right')
+    df = df.dropna()
+    # retunrs a dataframe
+    return df
+
+def miner_features_3yr(df):  
+    '''
+    This function will add all the miner CSVs to a main dataframe
+    '''
+    # add all the CSV files to a variable
+    csv_filenames = ['avg-fees-per-transaction_3yr', 'cost-per-transaction-percent_3yr', 'cost-per-transaction_3yr', 'difficulty_3yr', 'hash-rate_3yr', 'miners-revenue_3yr', 'transaction-fees-to-miners_3yr']
+    # loop each CSV into the dataframe using add_cvs function
+    print('running loop')
+    for filename in csv_filenames:
+        df = add_csv_3yr(df, filename)
+        df.index = pd.to_datetime(df.index)
+        print(f'adding {filename}')
+    # return df
+    print('done')
+    return df
+
 def time_features(df):
     '''
     This function adds time features to the dataframe based on statistical significance with the target variable.
