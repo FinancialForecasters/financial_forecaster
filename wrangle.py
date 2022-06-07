@@ -46,7 +46,7 @@ def wrangle_3_df():
     # Adding bitcoin circulation feature
     df = tidy.add_df_circ(df)
     # Adding miner features
-    #df = tidy.miner_features_3yr(df)
+    df = tidy.miner_features_3yr(df)
     # Drop nulls
     df = df.dropna()
     # Convert index of df to datetime
