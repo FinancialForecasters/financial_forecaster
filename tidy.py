@@ -75,9 +75,10 @@ def finance_df():
 	return model_btcusd(df)
 
 def explore_df():
-	df=csv_btcusd()
-	df=pre_cleaning(df)
-	return add_targets(df)
+    df=csv_btcusd()
+    df=pre_cleaning(df)
+    df.index = pd.to_datetime(df.index)
+    return add_targets(df)
 
 
 ##### NLP PROCESSING #####
