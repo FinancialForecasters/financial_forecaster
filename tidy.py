@@ -291,7 +291,7 @@ def macd_df(df):
     '''
 
     macd, signal, histo = talib.MACD(df.close,fastperiod=12, slowperiod=26, signalperiod=9)
-    mac=pd.concat([df,macd,signal,histo],axis=1)
+    mac=pd.concat([macd,signal,histo],axis=1)
     mac=mac.rename(columns={0:'macd',1:'signal',2:'histo'})
     mac=mac.drop(mac[mac.index<'2014-10-20'].index)
     mac=mac.fillna(0)
@@ -321,7 +321,7 @@ def macd_df(df):
     list=pd.Series(list, index=mac.index)
 
     # crossover indicator
-    macker=pd.concat([df,list,not_list],axis=1)
+    macker=pd.concat([df,mac,list,not_list],axis=1)
     macker=macker.rename({0:'cross',1:'histy'},axis=1)
 
     return macker
