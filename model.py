@@ -85,7 +85,7 @@ def rolling_split_train_and_test(df, features_to_use, features_to_scale, target,
 
         # Perform scaling after the split so scaler can be fit to each train set individually
         X_train_scaled, X_test_scaled = scale_X(X_train, X_test, features_to_use, features_to_scale, scaler_type = StandardScaler())
-        # Increments multiplier for next split
+        # Increments multiplier for next split. The product of the multiplier and test size determine the starting index for the next train set
         multiplier += 1
 
         train_X_sets.append(X_train_scaled)
@@ -477,12 +477,56 @@ def perform_rolling_classification_modeling(features_to_use, features_to_scale, 
         # plt.ylabel('Equity ($)')
 
     # plot baseline equity curve for test splits
-    baseline_equity_curve.plot(legend=False)
-    plt.title(f'Baseline Equity Curve')
-    plt.ylabel('Equity ($)')
+    # baseline_equity_curve.plot(legend=False)
+    # plt.title(f'Baseline Equity Curve')
+    # plt.ylabel('Equity ($)')
 
 
     average_cross_validate_result = consolidate_datasets(all_baseline_results, 
                                                          all_classification_dataset_model_results)
     
     return average_cross_validate_result
+
+
+
+def test_final_model(features_to_use, features_to_scale, model_to_test, target, other_targets, df, test_size):
+    """ Test the best model on the withheld test set, which here consists of the last <test_size> days 
+    
+    Returns: dataframe with equity results from applying this model to test and classification report
+    
+    Requires as inputs:
+    features to use: list
+    features to scale: list
+    model_to_test: scikit-learn model object
+    """
+
+    # Use withheld test set on final model
+    X_final_test = df[features_to_scale].iloc[-test_size:]
+    y_final_test = df[[target,'fwd_ret','close']].iloc[-test_size:]
+
+    # Use preceding X_train_length datapoints (2620) for training the final model
+    X_final_train = df[features_to_scale].iloc[-(2620+test_size):-test_size]
+    y_final_train = df[[target,'fwd_ret','close']].iloc[-(2620+test_size):-test_size]
+
+    # Perform scaling after the split so scaler can be fit to each train set individually
+    X_final_train_scaled, X_final_test_scaled = scale_X(X_final_train, X_final_test, features_to_use, features_to_scale, scaler_type = StandardScaler())
+
+    # Train and test using model, output classification reports and predictions
+    train_classification_report, test_classification_report, train_predictions, test_predictions = train_and_test_dataset(model_to_test,
+                           X_final_train_scaled, 
+                           X_final_test_scaled, 
+                           y_final_train, 
+                           y_final_test, 
+                           target, print_results = False)
+
+    train_equity_results, final_test_equity_results = get_equity_results(y_final_train, 
+                                                                   y_final_test,  
+                                                                   train_predictions, 
+                                                                   test_predictions)
+
+
+    final_test_equity_curve = pd.DataFrame()
+    # Generate equity curve of the test sets
+    final_test_equity_curve= get_equity_curve(final_test_equity_curve, final_test_equity_results)
+    
+    return final_test_equity_curve, test_classification_report
