@@ -1,6 +1,7 @@
 from imports import *
 from sklearn.metrics import mean_squared_error, classification_report, accuracy_score, r2_score
-
+import matplotlib.dates as mdates
+from matplotlib.dates import DateFormatter
 
 def baseline_selection(y_train, target):
     '''
@@ -396,7 +397,9 @@ def get_equity_curve(equity_curve, test_equity_results, show_plot = False):
     return equity_curve
     
 def perform_rolling_classification_modeling(features_to_use, features_to_scale, target, models_to_test, train_X_sets, test_X_sets, train_y_sets, test_y_sets):
-    """ Iterate through classification models defined to produce predictions"""
+    """ Iterate through classification models defined to produce predictions
+    
+    Return cross validation results as a DataFrame and equity plots data (dict)"""
     
     all_classification_dataset_model_results = pd.DataFrame()
     all_baseline_results = pd.DataFrame()
@@ -485,7 +488,7 @@ def perform_rolling_classification_modeling(features_to_use, features_to_scale, 
     average_cross_validate_result = consolidate_datasets(all_baseline_results, 
                                                          all_classification_dataset_model_results)
     
-    return average_cross_validate_result
+    return average_cross_validate_result, equity_plots_data
 
 
 
@@ -530,3 +533,20 @@ def test_final_model(features_to_use, features_to_scale, model_to_test, target, 
     final_test_equity_curve= get_equity_curve(final_test_equity_curve, final_test_equity_results)
     
     return final_test_equity_curve, test_classification_report
+
+
+def plot_final_equity(final_model_validate_test_equity, df, test_size):
+    """ Plot performance of final model on the withheld test set """
+    
+    fig, ax = plt.subplots(figsize = (10,6))
+    ax.plot(final_model_validate_test_equity)
+    ax.set_title('Best Model Equity Performance - 2022', fontsize = 18)
+    ax.set_ylabel('Equity ($)', fontsize = 18)
+
+    final_test_start = df.index.max()-timedelta(days = test_size)
+    final_test_end = df.index.max()
+
+    # ax.axvspan(train_start, train_end, label = "train", color = "green", alpha = 0.3)
+    ax.axvspan(final_test_start, final_test_end, label = "final test set", color = "green", alpha = 0.3)
+    ax.annotate('Final Test Set', (mdates.datestr2num('2022-04-25'), 10000), fontsize = 15)
+    ax.xaxis.set_major_formatter(DateFormatter('%B'))
