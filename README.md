@@ -1,8 +1,6 @@
-# Binance Project
+# Financial Forecasters Capstone Project
 
 ## Table of Contents
-- [Binance Project](#binance-project)
-  - [Table of Contents](#table-of-contents)
   - [Project Goal](#project-goal)
   - [Project Description](#project-description)
   - [How to Reproduce](#how-to-reproduce)
@@ -23,61 +21,48 @@
 
 ## Project Goal
 
-This project analyzes recent bitcoin trade data in order to attempt price prediction.
-
-Most of what I know about crypto analysis on Binance, I learned from Part Time Larry. Check out his deets:
-
-- PartTimeLarry
-- <https://hackingthemarkets.com/>
+Our goal for the project was to predict the direction of Bitcoin's next day closing price using features related to supply and demand. These predictions were used as inputs to a trading strategy and profitability and risk were assessed.
 
 ## Project Description
 
-For this project, I acquired btcusd 1 minute kline data from theBinance API; <https://docs.binance.us/#introduction>. Tidying the data includes changing column labels, changing index to time index (`'close_time'` in this case) and finally the data is split into train, validate, test datasets. Data exploration delves into the descriptive statistics of the dataset. Further investigation includes up / down -sampling, frequency analysis, lag response, and autocorrelation. With a firm grasp of the data, I offer several models that attempt to predict the future price of btcusd trading pair. I used a last observed value (lov), average, 15 minute simple moving average from TAlib, and a basic Holt's linear trend. Root mean square errors (RMSE) are reported for comparison.
+For this project, daily price data for Bitcoin was acquired using Yahoo Finance. Several price transformations (technical indicators) were calculated based on the daily open, high, low, and close price of Bitcoin. Additional features related to the supply of Bitcoin, such as miner transactions and revenue data, were acquired as csvs from Blockchain.com. Twitter sentiment data was acquired from both a Kaggle dataset (for Tweets < 2019) and via scraping using the snscrape Python library. Exploratory data analysis was performed to investigate the relationship between these factors and returns. Based on the results of this analysis machine learning models were built with some combination of these features as inputs with the target being the direction of the next day's close. Finally, the model predictions were used as inputs to a simple trading strategy that decides when to buy or sell short Bitcoin, and the profitability and risk of this strategy assessed. 
 
 ## How to Reproduce 
 
-1. You will need an env.py file that contains the hostname, username and password for your Binance account. Please check the resources on their page for encrypted api access. Store that env file locally in the repository.
-2. Clone my repo (including the tidy.py and model.py modules) (confirm .gitignore is hiding your env.py file)
-3. Libraries used:
+1. Clone the repo (including the tidy.py and model.py modules as well as the csvs)
+2. Libraries used:
 
 - pandas
 - matplotlib
 - seaborn
 - numpy
-- sklearn
-- math
-- statsmodels
+- scikit-learn
+- snscrape
 - scipy
-- <https://scipy.org/>
-- TA-Lib
+  - https://github.com/JustAnotherArchivist/snscrape
+- TA-Lib (Technical Analysis Indicators)
   - <https://mrjbq7.github.io/ta-lib/index.html>
-- binance api
-  - <https://www.binance.com/en/support/faq/360002502072>
-  - <https://algotrading101.com/learn/binance-python-api-guide/>
-  - <https://anaconda.org/conda-forge/python-binance>
-- included in python-binance
-  - websockets
-    - <https://websockets.readthedocs.io/en/stable/>
+
 
 ## Initial Questions
 
-1. What result will time-series-analysis have on previous binance data?
-1. How accurate are predictions compared to actual values?
-1. Can I predict the future price of bitcoin?
+1. Does high volatility result in above average returns?
+1. Is social media sentiment predictive of Bitcoin returns?
+1. Are any days of the week or month better for buying Bitcoin?
+1. How does price momentum affect returns?
 
 ## Data Dictionary
 
-Definitions for historical K-line data pulled from Binance API.
 Variables |Definition
 --- | ---
-Index | Datetime in the format: YYYY-MM-DD
-open | Price at open
+Index | Datetime in the format: YYYY-MM-DD. Time Zone: UTC
+open | Price at open of the day
 high | Highest price for day
 low | Lowest price per day
-close | Price at close
+close | Price at close of the day
 volume | Amount in $USD traded for the day
-fws_log_ret | 
-fwd_close_positive |
+fwd_log_ret | the log of tomorrow's close - log of today's close
+fwd_close_positive | whether tomorrow's close is higher than today's
 cross |
 histy | 
 month_9 | Encoded column for transaction during month 9 (September)
@@ -85,22 +70,23 @@ month_10 | Encoded column for transaction during month 10 (October)
 day_20 | Encoded column for transaction on month day 20
 day_1 | Encoded column for transaction on first day of month
 day_9 | Encoded column for transaction on month day 9
+ATR | Technical analysis indicator used for measuring market volatility. 
+MACF | Trend-following momentum indicator, shows relationship between two moving averages.
+Volatility | Typically a measure of how fast a market is moving inside of a given range.
 atr_above_threshold_0.01 | True when today's ATR is above the historical (14 day) average ATR by the given threshold (0.01)
 atr_above_threshold_0.05 | True when today's ATR is above the historical (14 day) average ATR by the given threshold (0.05)
 atr_above_threshold_0.1 | True when today's ATR is above the historical (14 day) average ATR by the given threshold (0.1)
 atr_above_threshold_0.2 | True when today's ATR is above the historical (14 day) average ATR by the given threshold (0.2)
 atr_above_threshold_0.3 | True when today's ATR is above the historical (14 day) average ATR by the given threshold (0.3)
 avg-fees-per-transaction | Amount in $USD of average fees per transaction (by day)
-cost-per-transaction-percent | 
-cost-per-transaction | 
-difficulty |
-hash-rate |
-miners-revenue |
-transaction-fees-to-miners |
+cost-per-transaction-percent | miners revenue as percentage of the transaction volume
+cost-per-transaction | miners revenue divided by the number of transactions
+difficulty | A score of how difficult it is to produce a new block on the blockchain. 
+hash-rate | Estimated number of terahashes per second the bitcoin network is performs over previous 24 hours
+miners-revenue | Total value in USD of coinbase block rewards and transaction fees paid to miners
+transaction-fees-to-miners | Value of all transaction fees paid to miners
 
 ## Project Plan
-
-Method:
 
 ### 1. Imports
 
@@ -108,43 +94,54 @@ Method:
 
 ### 2. Acquisition
 
-- In this stage, I obtained btcusd trading pair data by querying the Binance REST API hosted at <https://api.binance.us/api/v3/klines>.
+- BTC trade data was acquired as a csv file from Yahoo Finance
+- Miner features were acquired as csv files form Blockchain.com
+- Tweets from Twitter were scraped from Twitter using the snscrape library
 
 ### 3. Preparation
 
-- I cleaned and prepped the data by:
-  - removing all observations that included null values.
+- Preparation and cleaning consisted of:
   - renaming columns for readability.
   - changing data types where appropriate.
   - set the index to `datetime`.
+  - for Tweets:
+      - very short or blank Tweets were removed
+      - VADER sentiment score was calculated for each Tweet
+      - Sentiment scores were aggregated for each day using the mean value
 
 ### 4. Exploration
 
-- I conducted an initial exploration of the data by examing relationships between each of the features and treated close price as a target.
-- Next, I explored further using premier tools such as Pandas, Python, Statsmodels, etc..., to answer the initial questions posed above.
+- We investigated the relationship between the features and the target, asking whether any features were drivers of returns. 
+
 - Findings:
-  - frequency analysis revealed potential price indicators.
+    - Few supply related features had correlation with returns. Miner Revenue per Transaction showed a weakly linear correlation with returns suggesting that as miner revenue per transaction increases we can expect returns to increase as well. This is contract to our initial hypothesis and indicates potential for a confounding variable.
+    - Average next day returns are positive when current volatility measured by ATR is higher than historical volatility and in fact reach a peak when ATR is 20% greater than average. When volatility is greater than 20% above average returns decline and actually turn negative when volatility is very high.
+    - Divergence between Twitter sentiment and Bitcoin's closing price may have helped a trader stay out of the market when prices were about to crash. 
+    - Watching momentum via MACD can help us understand if a security is gaining or losing popularity in the market. Generally, positive momentum will drive the price higher while the opposite is also considered true. Positive momentum is indicated by a MACD value greater than the signal value.
+    - Returns are highly variable depending on the day of the week and the month. A few days show a statistically significant relationship with returns.
 
-### 5. Forecasting and Modeling
+### 5. Modeling
 
-- I used data from 2022 April 26 from approximately 03:30 - 20:30 to determine if the candlestick close price, in conjuncture with the time index, could be used to determine future close prices, then modeled what the predicted values would like against the acutal values.
+- We took the results of our analysis of the various supply and demand factors such as miner revenue, Twitter sentiment and volatility, and used them as features for classification models. Our prediction target was the direction of the next day’s return - would tomorrow’s closing price be higher than today’s? As our ranking metric we used average percent return divided by standard deviation of percent returns, which is a form of risk to reward ratio. To  understand how the model would perform on unseen data the data was split as follows. The very last month of data (May 2022) was withheld for testing of the final model, while the remaining data (going back to 2014) was split into four rolling windows each approximately 3.5 years long. Within each of these windows the data was split into train and validate sets. Each classification model was trained on the training set and then used for predictions on the validate set. The average of the scores on the four validate sets was used to determine each model’s overall performance.
 
 ### Deliverables
 
-### Final Report
+1. Presentation June 16
+2. This README and Repository with Final Notebook
+3. White paper
+
 
 ## Key Findings
 
-While one model alone was not effective at predicting future values, there may be a pattern of multiple models, that could at least recognize trade flags, if not predict them altogether.
+We experimented with classification and regression models to predict the relative direction of the next day’s closing price, but their performance severely deteriorated in the final test evaluations. The features we used show promise statistically but did not perform well in their current utilization beyond train and validate sampling. Any correlation or relationship is likely fleeting and would need to be exploited quickly before other market participants catch on. 
 
 ## Recommendations
 
-1. DO consider using the descriptive statistics to see highs and lows in the price of bitcoin over the past several hours and use that information, in conjunction with other sound trading principles, to find price points that are suitable for your portfolio.
-2. DO NOT use the models in this project to make trade decisions. The predictions in this project are wildly inaccurate compared to the behavior of the actual bitcoin market.
+1. Further research is needed to determine features predictive of the daily returns of Bitcoin.
+2. Perform further engineering of the existing features we acquired and tune them specifically for short-term trading.
+3. Try other modeling methods, such as shorter training periods and more sophisticated models
+4. DO NOT use the models in this project to make trade decisions. The predictions in this project are wildly inaccurate compared to the behavior of the actual bitcoin market.
 
 ## Next Steps
 
-- explore a clustering model with the full set of candlestick features to glean an unsupervised machine's learning perspective.
-- compare RMSE of Facebook's "Prophet" model to current models.
-
-
+1. Develop the features explored in this project further and test more sophisticated modeling techniques. 
