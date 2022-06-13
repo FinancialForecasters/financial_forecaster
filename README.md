@@ -37,11 +37,10 @@ For this project, daily price data for Bitcoin was acquired using Yahoo Finance.
 - seaborn
 - numpy
 - scikit-learn
-- statsmodels
 - snscrape
 - scipy
-- <https://scipy.org/>
-- TA-Lib
+  - https://github.com/JustAnotherArchivist/snscrape
+- TA-Lib (Technical Analysis Indicators)
   - <https://mrjbq7.github.io/ta-lib/index.html>
 
 
