@@ -1,8 +1,7 @@
 # Financial Forecasters Capstone Project
 
 ## Table of Contents
-- [Financial Forecasters Capstone Project](#Financial Forecasters Capstone Project)
-  - [Table of Contents](#table-of-contents)
+- [Financial Forecasters Capstone Project]
   - [Project Goal](#project-goal)
   - [Project Description](#project-description)
   - [How to Reproduce](#how-to-reproduce)
@@ -27,7 +26,7 @@ Our goal for the project was to predict the direction of Bitcoin's next day clos
 
 ## Project Description
 
-For this project, daily price data for Bitcoin was acquired using Yahoo Finance. Several price transformations (technical indicators) were calculated based on the daily open, high, low, and close price of Bitcoin. Additional features related to the supply of Bitcoin, such as miner transactions and revenue data, were acquired as csvs from Blockchain.com. Twitter sentiment data was acquired from both a Kaggle dataset (for Tweets < 2019) and via scraping via the snscrape Python library. Exploratory data analysis was performed to investigate the relationship between these factors and returns. Based on the results of this analysis machine learning models were built with some combination of these features as inputs with the target being the direction of the next day's close. Finally, the model predictions were used as inputs to a simple trading strategy that decides when to buy or sell short Bitcoin, and the profitability and risk of this strategy assessed. 
+For this project, daily price data for Bitcoin was acquired using Yahoo Finance. Several price transformations (technical indicators) were calculated based on the daily open, high, low, and close price of Bitcoin. Additional features related to the supply of Bitcoin, such as miner transactions and revenue data, were acquired as csvs from Blockchain.com. Twitter sentiment data was acquired from both a Kaggle dataset (for Tweets < 2019) and via scraping using the snscrape Python library. Exploratory data analysis was performed to investigate the relationship between these factors and returns. Based on the results of this analysis machine learning models were built with some combination of these features as inputs with the target being the direction of the next day's close. Finally, the model predictions were used as inputs to a simple trading strategy that decides when to buy or sell short Bitcoin, and the profitability and risk of this strategy assessed. 
 
 ## How to Reproduce 
 
@@ -91,8 +90,6 @@ transaction-fees-to-miners | Fees are distributed to whichever miner successfull
 
 ## Project Plan
 
-Method:
-
 ### 1. Imports
 
 - Imports used can be found in `imports.py`. (Please ensure libraries are installed for package support).
@@ -119,11 +116,15 @@ Method:
 - We investigated the relationship between the features and the target, asking whether any features were drivers of returns. 
 
 - Findings:
+    - Few supply related features had correlation with returns. Miner Revenue per Transaction showed a weakly linear correlation with returns suggesting that as miner revenue per transaction increases we can expect returns to increase as well. This is contract to our initial hypothesis and indicates potential for a confounding variable.
+    - Average next day returns are positive when current volatility measured by ATR is higher than historical volatility and in fact reach a peak when ATR is 20% greater than average. When volatility is greater than 20% above average returns decline and actually turn negative when volatility is very high.
+    - Divergence between Twitter sentiment and Bitcoin's closing price may have helped a trader stay out of the market when prices were about to crash. 
+    - Watching momentum via MACD can help us understand if a security is gaining or losing popularity in the market. Generally, positive momentum will drive the price higher while the opposite is also considered true. Positive momentum is indicated by a MACD value greater than the signal value.
+    - Returns are highly variable depending on the day of the week and the month. A few days show a statistically significant relationship with returns.
 
+### 5. Modeling
 
-### 5. Forecasting and Modeling
-
-- I used data from 2022 April 26 from approximately 03:30 - 20:30 to determine if the candlestick close price, in conjuncture with the time index, could be used to determine future close prices, then modeled what the predicted values would like against the acutal values.
+- We took the results of our analysis of the various supply and demand factors such as miner revenue, Twitter sentiment and volatility, and used them as features for classification models. Our prediction target was the direction of the next day’s return - would tomorrow’s closing price be higher than today’s? As our ranking metric we used average percent return divided by standard deviation of percent returns, which is a form of risk to reward ratio. To  understand how the model would perform on unseen data the data was split as follows. The very last month of data (May 2022) was withheld for testing of the final model, while the remaining data (going back to 2014) was split into four rolling windows each approximately 3.5 years long. Within each of these windows the data was split into train and validate sets. Each classification model was trained on the training set and then used for predictions on the validate set. The average of the scores on the four validate sets was used to determine each model’s overall performance.
 
 ### Deliverables
 
