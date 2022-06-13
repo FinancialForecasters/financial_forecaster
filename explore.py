@@ -101,7 +101,7 @@ def plot_consolidated_atr_analysis(df):
     plt.axhline(df.fwd_log_ret.mean(), color = 'r')
     plt.annotate('Overall Mean', (5, 0.0017))
     
-def plot_sentiment_and_close(price_df, csv_file = './csv/weekly_consolidated_later_sentiment.csv'):
+def plot_sentiment_and_close(price_df, csv_file = './project_csvs/weekly_consolidated_later_sentiment.csv'):
     """Plot aggregated Twitter sentiment with close price going back to 2019 """
     
     # Read in aggregated tweet csv 
