@@ -1,7 +1,6 @@
 # Financial Forecasters Capstone Project
 
 ## Table of Contents
-- [Financial Forecasters Capstone Project]
   - [Project Goal](#project-goal)
   - [Project Description](#project-description)
   - [How to Reproduce](#how-to-reproduce)
@@ -50,8 +49,8 @@ For this project, daily price data for Bitcoin was acquired using Yahoo Finance.
 
 1. Does high volatility result in above average returns?
 1. Is social media sentiment predictive of Bitcoin returns?
-1. 
-1. 
+1. Are any days of the week or month better for buying Bitcoin?
+1. How does price momentum affect returns?
 
 ## Data Dictionary
 
@@ -81,12 +80,12 @@ atr_above_threshold_0.1 | True when today's ATR is above the historical (14 day)
 atr_above_threshold_0.2 | True when today's ATR is above the historical (14 day) average ATR by the given threshold (0.2)
 atr_above_threshold_0.3 | True when today's ATR is above the historical (14 day) average ATR by the given threshold (0.3)
 avg-fees-per-transaction | Amount in $USD of average fees per transaction (by day)
-cost-per-transaction-percent | 
-cost-per-transaction | 
+cost-per-transaction-percent | miners revenue as percentage of the transaction volume
+cost-per-transaction | miners revenue divided by the number of transactions
 difficulty | A score of how difficult it is to produce a new block on the blockchain. 
-hash-rate | Typically hashes/second that is an indicator of security and applied computational power to the blockchain.
-miners-revenue | Fees are distributed to whichever miner successfully finds and completes the correct proof of work to add a new block to the blockchain.
-transaction-fees-to-miners | Fees are distributed to whichever miner successfully finds and completes the correct proof of work to add a new block to the blockchain.
+hash-rate | Estimated number of terahashes per second the bitcoin network is performs over previous 24 hours
+miners-revenue | Total value in USD of coinbase block rewards and transaction fees paid to miners
+transaction-fees-to-miners | Value of all transaction fees paid to miners
 
 ## Project Plan
 
