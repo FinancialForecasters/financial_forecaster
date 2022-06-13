@@ -8,6 +8,7 @@ env.py
 # file extensions
 
 *.xlsx
+*.gif
 
 # hidden folders
 .env/
