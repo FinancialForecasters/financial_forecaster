@@ -1,7 +1,7 @@
-# Binance Project
+# Financial Forecasters Capstone Project
 
 ## Table of Contents
-- [Binance Project](#binance-project)
+- [Financial Forecasters Capstone Project](#Financial Forecasters Capstone Project)
   - [Table of Contents](#table-of-contents)
   - [Project Goal](#project-goal)
   - [Project Description](#project-description)
@@ -23,61 +23,49 @@
 
 ## Project Goal
 
-This project analyzes recent bitcoin trade data in order to attempt price prediction.
-
-Most of what I know about crypto analysis on Binance, I learned from Part Time Larry. Check out his deets:
-
-- PartTimeLarry
-- <https://hackingthemarkets.com/>
+Our goal for the project was to predict the direction of Bitcoin's next day closing price using features related to supply and demand. These predictions were used as inputs to a trading strategy and profitability and risk were assessed.
 
 ## Project Description
 
-For this project, I acquired btcusd 1 minute kline data from theBinance API; <https://docs.binance.us/#introduction>. Tidying the data includes changing column labels, changing index to time index (`'close_time'` in this case) and finally the data is split into train, validate, test datasets. Data exploration delves into the descriptive statistics of the dataset. Further investigation includes up / down -sampling, frequency analysis, lag response, and autocorrelation. With a firm grasp of the data, I offer several models that attempt to predict the future price of btcusd trading pair. I used a last observed value (lov), average, 15 minute simple moving average from TAlib, and a basic Holt's linear trend. Root mean square errors (RMSE) are reported for comparison.
+For this project, daily price data for Bitcoin was acquired using Yahoo Finance. Several price transformations (technical indicators) were calculated based on the daily open, high, low, and close price of Bitcoin. Additional features related to the supply of Bitcoin, such as miner transactions and revenue data, were acquired as csvs from Blockchain.com. Twitter sentiment data was acquired from both a Kaggle dataset (for Tweets < 2019) and via scraping via the snscrape Python library. Exploratory data analysis was performed to investigate the relationship between these factors and returns. Based on the results of this analysis machine learning models were built with some combination of these features as inputs with the target being the direction of the next day's close. Finally, the model predictions were used as inputs to a simple trading strategy that decides when to buy or sell short Bitcoin, and the profitability and risk of this strategy assessed. 
 
 ## How to Reproduce 
 
-1. You will need an env.py file that contains the hostname, username and password for your Binance account. Please check the resources on their page for encrypted api access. Store that env file locally in the repository.
-2. Clone my repo (including the tidy.py and model.py modules) (confirm .gitignore is hiding your env.py file)
-3. Libraries used:
+1. Clone the repo (including the tidy.py and model.py modules as well as the csvs)
+2. Libraries used:
 
 - pandas
 - matplotlib
 - seaborn
 - numpy
-- sklearn
-- math
+- scikit-learn
 - statsmodels
+- snscrape
 - scipy
 - <https://scipy.org/>
 - TA-Lib
   - <https://mrjbq7.github.io/ta-lib/index.html>
-- binance api
-  - <https://www.binance.com/en/support/faq/360002502072>
-  - <https://algotrading101.com/learn/binance-python-api-guide/>
-  - <https://anaconda.org/conda-forge/python-binance>
-- included in python-binance
-  - websockets
-    - <https://websockets.readthedocs.io/en/stable/>
+
 
 ## Initial Questions
 
-1. What result will time-series-analysis have on previous binance data?
-1. How accurate are predictions compared to actual values?
-1. Can I predict the future price of bitcoin?
+1. Does high volatility result in above average returns?
+1. Is social media sentiment predictive of Bitcoin returns?
+1. 
+1. 
 
 ## Data Dictionary
 
-Definitions for historical K-line data pulled from Binance API.
 Variables |Definition
 --- | ---
-Index | Datetime in the format: YYYY-MM-DD
-open | Price at open
+Index | Datetime in the format: YYYY-MM-DD. Time Zone: UTC
+open | Price at open of the day
 high | Highest price for day
 low | Lowest price per day
-close | Price at close
+close | Price at close of the day
 volume | Amount in $USD traded for the day
-fws_log_ret | 
-fwd_close_positive |
+fwd_log_ret | the log of tomorrow's close - log of today's close
+fwd_close_positive | whether tomorrow's close is higher than today's
 cross |
 histy | 
 month_9 | Encoded column for transaction during month 9 (September)
@@ -108,15 +96,20 @@ Method:
 
 ### 2. Acquisition
 
-- In this stage, I obtained btcusd trading pair data by querying the Binance REST API hosted at <https://api.binance.us/api/v3/klines>.
+- BTC trade data was acquired as a csv file from Yahoo Finance
+- Miner features were acquired as csv files form Blockchain.com
+- Tweets from Twitter were scraped from Twitter using the snscrape library
 
 ### 3. Preparation
 
-- I cleaned and prepped the data by:
-  - removing all observations that included null values.
+- Preparation and cleaning consisted of:
   - renaming columns for readability.
   - changing data types where appropriate.
   - set the index to `datetime`.
+  - for Tweets:
+      - very short or blank Tweets were removed
+      - VADER sentiment score was calculated for each Tweet
+      - Sentiment scores were aggregated for each day using the mean value
 
 ### 4. Exploration
 
