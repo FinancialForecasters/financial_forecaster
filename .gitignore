@@ -10,6 +10,9 @@ env.py
 *.xlsx
 *.gif
 
+# personal notebooks
+explore_jesse-tweets.ipynb
+
 # hidden folders
 .env/
 .ipynb_checkpoints/

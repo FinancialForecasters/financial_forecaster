@@ -5,9 +5,9 @@ pull the latest 1000 candlestick entries from the binance api
 from imports import *
 
 def csv_btcusd():
-	if os.path.exists('BTC-USD.csv'):
+	if os.path.exists('./project_csvs/BTC-USD.csv'):
 		print('cached csv')
-		df = pd.read_csv('BTC-USD.csv')
+		df = pd.read_csv('./project_csvs/BTC-USD.csv')
 		return df
 	else:
 		# payload = {'symbol':'BTCUSD','interval':'1m','limit':'1000'}
