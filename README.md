@@ -73,6 +73,9 @@ month_10 | Encoded column for transaction during month 10 (October)
 day_20 | Encoded column for transaction on month day 20
 day_1 | Encoded column for transaction on first day of month
 day_9 | Encoded column for transaction on month day 9
+ATR | Technical analysis indicator used for measuring market volatility. 
+MACF | Trend-following momentum indicator, shows relationship between two moving averages.
+Volatility | Typically a measure of how fast a market is moving inside of a given range.
 atr_above_threshold_0.01 | True when today's ATR is above the historical (14 day) average ATR by the given threshold (0.01)
 atr_above_threshold_0.05 | True when today's ATR is above the historical (14 day) average ATR by the given threshold (0.05)
 atr_above_threshold_0.1 | True when today's ATR is above the historical (14 day) average ATR by the given threshold (0.1)
@@ -81,10 +84,10 @@ atr_above_threshold_0.3 | True when today's ATR is above the historical (14 day)
 avg-fees-per-transaction | Amount in $USD of average fees per transaction (by day)
 cost-per-transaction-percent | 
 cost-per-transaction | 
-difficulty |
-hash-rate |
-miners-revenue |
-transaction-fees-to-miners |
+difficulty | A score of how difficult it is to produce a new block on the blockchain. 
+hash-rate | Typically hashes/second that is an indicator of security and applied computational power to the blockchain.
+miners-revenue | Fees are distributed to whichever miner successfully finds and completes the correct proof of work to add a new block to the blockchain.
+transaction-fees-to-miners | Fees are distributed to whichever miner successfully finds and completes the correct proof of work to add a new block to the blockchain.
 
 ## Project Plan
 
@@ -113,10 +116,10 @@ Method:
 
 ### 4. Exploration
 
-- I conducted an initial exploration of the data by examing relationships between each of the features and treated close price as a target.
-- Next, I explored further using premier tools such as Pandas, Python, Statsmodels, etc..., to answer the initial questions posed above.
+- We investigated the relationship between the features and the target, asking whether any features were drivers of returns. 
+
 - Findings:
-  - frequency analysis revealed potential price indicators.
+
 
 ### 5. Forecasting and Modeling
 
@@ -124,20 +127,22 @@ Method:
 
 ### Deliverables
 
-### Final Report
+1. Presentation June 16
+2. This README and Repository with Final Notebook
+3. White paper
+
 
 ## Key Findings
 
-While one model alone was not effective at predicting future values, there may be a pattern of multiple models, that could at least recognize trade flags, if not predict them altogether.
+We experimented with classification and regression models to predict the relative direction of the next day’s closing price, but their performance severely deteriorated in the final test evaluations. The features we used show promise statistically but did not perform well in their current utilization beyond train and validate sampling. Any correlation or relationship is likely fleeting and would need to be exploited quickly before other market participants catch on. 
 
 ## Recommendations
 
-1. DO consider using the descriptive statistics to see highs and lows in the price of bitcoin over the past several hours and use that information, in conjunction with other sound trading principles, to find price points that are suitable for your portfolio.
-2. DO NOT use the models in this project to make trade decisions. The predictions in this project are wildly inaccurate compared to the behavior of the actual bitcoin market.
+1. Further research is needed to determine features predictive of the daily returns of Bitcoin.
+2. Perform further engineering of the existing features we acquired and tune them specifically for short-term trading.
+3. Try other modeling methods, such as shorter training periods and more sophisticated models
+4. DO NOT use the models in this project to make trade decisions. The predictions in this project are wildly inaccurate compared to the behavior of the actual bitcoin market.
 
 ## Next Steps
 
-- explore a clustering model with the full set of candlestick features to glean an unsupervised machine's learning perspective.
-- compare RMSE of Facebook's "Prophet" model to current models.
-
-
+1. Develop the features explored in this project further and test more sophisticated modeling techniques. 
