@@ -2,31 +2,49 @@
 pull the latest 1000 candlestick entries from the binance api
 '''
 
+from numpy import histogram
 from imports import *
 
 def csv_btcusd():
-	if os.path.exists('BTC-USD.csv'):
-		print('cached csv')
-		df = pd.read_csv('BTC-USD.csv')
-		return df
-	else:
-		# payload = {'symbol':'BTCUSD','interval':'1m','limit':'1000'}
-		# r = requests.get('https://api.binance.us/api/v3/klines', params=payload)
-		# btcusd_json=r.json()
-		# btcusd_df=pd.DataFrame(btcusd_json)
-		# columns=['open_time','open','high','low','close','volume','close_time','quote_asset','number_of_trades','taker_buy_base_asset_vol','taker_buy_quote_asset_vol','ignore']
-		# btcusd_df.columns=columns
-		# btcusd_df.to_csv('/Users/hinzlehome/codeup-data-science/binance-project/csv/btcusd.csv', index=False)
-		# return btcusd_df
-		return None
+    '''
+    this function returns the yfinance.com, bitcoin trading data in a pandas dataframe.
+    '''
+    # check to see if the file is on root
+    if os.path.exists('BTC-USD.csv'):
+        # if so, print confirmation
+        print('cached csv')
+        # import csv file into pandas as 'df'
+        df = pd.read_csv('BTC-USD.csv')
+        # return df
+        return df
+    # if there's no file on root, this function returns nothing
+    else:
+        # payload = {'symbol':'BTCUSD','interval':'1m','limit':'1000'}
+        # r = requests.get('https://api.binance.us/api/v3/klines', params=payload)
+        # btcusd_json=r.json()
+        # btcusd_df=pd.DataFrame(btcusd_json)
+        # columns=['open_time','open','high','low','close','volume','close_time','quote_asset','number_of_trades','taker_buy_base_asset_vol','taker_buy_quote_asset_vol','ignore']
+        # btcusd_df.columns=columns
+        # btcusd_df.to_csv('/Users/hinzlehome/codeup-data-science/binance-project/csv/btcusd.csv', index=False)
+        # return btcusd_df
+        return None
 
 def pre_cleaning(df):
+    '''
+    this function accepts a df of bitcoin data and begins preparation for the data science pipeline
+    '''
+    # add columns for removal to this list
     drops=['Adj Close']
+    # drop columns
     df=df.drop(labels=drops,axis=1)
+    # rename columns for sake of convenience
     df=df.rename(columns={'Date':'date','Open':'open','High':'high','Low':'low','Close':'close','Volume':'volume'})
+    # set column to datetime
     df.date=pd.to_datetime(df.date)
+    # set index as datetime
     df=df.set_index('date').sort_index()
     # df.date=df.date.strftime('%Y-%m-%d')
+    # returns df ready for exploration
     return df
 
 def add_targets(df):
@@ -67,14 +85,29 @@ def add_ATR_feature(df):
     return df
 
 def finance_df():
-	df=csv_btcusd()
+    '''
+    this function returns the yfinance.com, bitcoin trading data in a pandas dataframe.
+    df is intended for modeling.
+    '''
+	# pull df from root
+    df=csv_btcusd()
+    # prepare df
 	df=pre_cleaning(df)
+    # add engineered features
 	df=add_targets(df)
+    # return df
 	return model_btcusd(df)
 
 def explore_df():
+    '''
+    this function returns the yfinance.com, bitcoin trading data in a pandas dataframe.
+    df is intended for modeling.
+    '''
+    # pull df from root
     df=csv_btcusd()
+    # prepare df
     df=pre_cleaning(df)
+    # dumb datetime index always getting yeeted
     df.index = pd.to_datetime(df.index)
     return add_targets(df)
 
@@ -289,27 +322,40 @@ def macd_df(df):
     '''
     macd encoder
     '''
-
+    # set up macd calculator from talib
     macd, signal, histo = talib.MACD(df.close,fastperiod=12, slowperiod=26, signalperiod=9)
+    # add macd, signal, and histogram to original dataframe
     mac=pd.concat([macd,signal,histo],axis=1)
+    # rename macd features
     mac=mac.rename(columns={0:'macd',1:'signal',2:'histo'})
+    # remove nulls from the first 26 rows caused by macd
     mac=mac.drop(mac[mac.index<'2014-10-20'].index)
+    # last sweep for nulls, set to zero if there are any left
     mac=mac.fillna(0)
+    # the following code feature-izes the macd
+    # create bools for postive histogram values
     cools=mac.histo>0
+    # start point for feature classification
     start=cools[0]
+    # empty list, will append feature values
     not_list=[]
 
+    # this loop will add a 1 to the list 'not_list' if the histogram is positive, else 0
     for x in cools:
         if x:
             not_list.append(1)
         else:
             not_list.append(0)
-
+    # take the histogram feature list, cast as a pandas series
     not_list=pd.Series(not_list, index=mac.index)
+    # set bools for macd greater than signal
     bools=mac.macd>mac.signal
+    # start point for feature classification
     yesterday=bools[0]
+    # empty list, will append feature values
     list=[]
 
+    # this loop will add a 1 to the list 'list' when the `macd` intersects the 'signal', else 0
     for today in bools:
         if today==yesterday:
             list.append(0)
@@ -317,16 +363,21 @@ def macd_df(df):
         else:
             list.append(1)
             yesterday=today
-
+    # take the macd crossover feature list, cast as a pandas series 
     list=pd.Series(list, index=mac.index)
 
-    # crossover indicator
+    # crossover indicator appended to input df
     macker=pd.concat([df,mac,list,not_list],axis=1)
+    # feature columns renamed
     macker=macker.rename({0:'cross',1:'histy'},axis=1)
 
+    # return ... (mileage may vary with road conditions)
     return macker
 
 def split_i(df):
+    '''
+    this function creates a train/ validate test set for time series analysis
+    '''
 	train = df.loc[:'2022-3-22']
 	validate =df.loc['2022-03-23':'2022-04-23'] 
 	return train, validate
