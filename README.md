@@ -24,12 +24,13 @@
 Our goal for the project was to predict the direction of Bitcoin's next day closing price using features related to supply and demand. These predictions were used as inputs to a trading strategy and profitability and risk were assessed.
 
 ## Project Description
+In recent years cryptocurrencies have become better known and continue to inch closer to mainstream adoption as an investment option. This is evident with the most recent announcement by Fidelity that Bitcoin will be offered for 401ks in the near future. This type of commodity remains largely speculative and volatile, which creates ample space for profit if one can exploit it. With extensive industry promotion there is a constant increase in the number of small-scale retail traders entering the market, and this project aims to provide some guidance to them.   
 
 For this project, daily price data for Bitcoin was acquired using Yahoo Finance. Several price transformations (technical indicators) were calculated based on the daily open, high, low, and close price of Bitcoin. Additional features related to the supply of Bitcoin, such as miner transactions and revenue data, were acquired as csvs from Blockchain.com. Twitter sentiment data was acquired from both a Kaggle dataset (for Tweets < 2019) and via scraping using the snscrape Python library. Exploratory data analysis was performed to investigate the relationship between these factors and returns. Based on the results of this analysis machine learning models were built with some combination of these features as inputs with the target being the direction of the next day's close. Finally, the model predictions were used as inputs to a simple trading strategy that decides when to buy or sell short Bitcoin, and the profitability and risk of this strategy assessed. 
 
 ## How to Reproduce 
 
-1. Clone the repo (including the tidy.py and model.py modules as well as the csvs)
+1. Clone the repo (including the tidy, wrangle, explore, and model modules as well as the csvs)
 2. Libraries used:
 
 - pandas
@@ -46,10 +47,11 @@ For this project, daily price data for Bitcoin was acquired using Yahoo Finance.
 
 ## Initial Questions
 
-1. Does high volatility result in above average returns?
+1. Does high volatility - quantified using ATR - result in above average returns?
 1. Is social media sentiment predictive of Bitcoin returns?
 1. Are any days of the week or month better for buying Bitcoin?
-1. How does price momentum affect returns?
+1. How does price momentum - quantified using MACD - affect returns?
+1. Do factors related to mining, such as transaction revenue, affect returns?
 
 ## Data Dictionary
 
@@ -63,8 +65,8 @@ close | Price at close of the day
 volume | Amount in $USD traded for the day
 fwd_log_ret | the log of tomorrow's close - log of today's close
 fwd_close_positive | whether tomorrow's close is higher than today's
-cross |
-histy | 
+cross | crossover indicator
+histy | state of the MACD histogram
 month_9 | Encoded column for transaction during month 9 (September)
 month_10 | Encoded column for transaction during month 10 (October)
 day_20 | Encoded column for transaction on month day 20
@@ -126,9 +128,9 @@ transaction-fees-to-miners | Value of all transaction fees paid to miners
 
 ### Deliverables
 
-1. Presentation June 16
-2. This README and Repository with Final Notebook
-3. White paper
+1. Presentation June 16, 2022([Slides](https://docs.google.com/presentation/d/1GMxa0X7DhOl-887oxuFqR4z95HsYQMSZ7hmThKwWH_A/edit?usp=sharing))
+2. This README and Repository with [Final Notebook](https://github.com/FinancialForecasters/financial_forecaster/blob/main/ff_final_notebook.ipynb) 
+3. [White paper](https://docs.google.com/document/d/1fW-3TGXpA7L-P8lwt-DrrKFtTjyhpk_B3PtscvZsKYU/edit?usp=sharing)
 
 
 ## Key Findings
