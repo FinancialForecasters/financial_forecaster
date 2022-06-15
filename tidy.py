@@ -10,11 +10,11 @@ def csv_btcusd():
     this function returns the yfinance.com, bitcoin trading data in a pandas dataframe.
     '''
     # check to see if the file is on root
-    if os.path.exists('BTC-USD.csv'):
+    if os.path.exists('~/codeup-data-science/financial_forecaster/project_csvs/BTC-USD.csv'):
         # if so, print confirmation
         print('cached csv')
         # import csv file into pandas as 'df'
-        df = pd.read_csv('BTC-USD.csv')
+        df = pd.read_csv('~/codeup-data-science/financial_forecaster/project_csvs/BTC-USD.csv')
         # return df
         return df
     # if there's no file on root, this function returns nothing
@@ -92,11 +92,11 @@ def finance_df():
 	# pull df from root
     df=csv_btcusd()
     # prepare df
-	df=pre_cleaning(df)
+    df=pre_cleaning(df)
     # add engineered features
-	df=add_targets(df)
+    df=add_targets(df)
     # return df
-	return model_btcusd(df)
+    return model_btcusd(df)
 
 def explore_df():
     '''
@@ -378,9 +378,9 @@ def split_i(df):
     '''
     this function creates a train/ validate test set for time series analysis
     '''
-	train = df.loc[:'2022-3-22']
-	validate =df.loc['2022-03-23':'2022-04-23'] 
-	return train, validate
+    train = df.loc[:'2022-3-22']
+    validate =df.loc['2022-03-23':'2022-04-23'] 
+    return train, validate
 
 def split_ii(df):
 	train = df.loc[:'2022-04-24']
