@@ -530,10 +530,12 @@ def move_tweets_to_csv(all_tweets, filepath = './csv/tweets.csv'):
     print(f"Tweets saved to csv at {filepath}")
 
 def macd_plot(df):
+	plt.rc('font',size=20)
 	fig, ax1 = plt.subplots(figsize=(16, 9))
 
 	rect = fig.patch
 	rect.set_facecolor('white')
+	plt.rc('font',size=20)
 
 	color = 'tab:blue'
 	# ax1.set_xlabel('Date',size=16)
@@ -545,7 +547,6 @@ def macd_plot(df):
 	df.macd.tail(150).plot()
 	df.signal.tail(150).plot()
 	plt.stem(df.index[-150:],df['histo'].tail(150),linefmt='pink',markerfmt='w,',label='hist')
-
 
 	ax2 = ax1.twinx()
 	
@@ -567,5 +568,5 @@ def macd_plot(df):
 	ax2.legend(loc=1)
 
 	plt.tight_layout()
-	# plt.rc('font',size=20)
+
 	plt.show()
