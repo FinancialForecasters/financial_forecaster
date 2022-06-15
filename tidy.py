@@ -10,11 +10,11 @@ def csv_btcusd():
     this function returns the yfinance.com, bitcoin trading data in a pandas dataframe.
     '''
     # check to see if the file is on root
-    if os.path.exists('~/codeup-data-science/financial_forecaster/project_csvs/BTC-USD.csv'):
+    if os.path.exists('BTC-USD.csv'):
         # if so, print confirmation
         print('cached csv')
         # import csv file into pandas as 'df'
-        df = pd.read_csv('~/codeup-data-science/financial_forecaster/project_csvs/BTC-USD.csv')
+        df = pd.read_csv('BTC-USD.csv')
         # return df
         return df
     # if there's no file on root, this function returns nothing
