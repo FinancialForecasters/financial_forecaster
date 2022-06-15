@@ -378,9 +378,13 @@ def split_i(df):
     '''
     this function creates a train/ validate test set for time series analysis
     '''
+<<<<<<< HEAD
+    train = df.loc[:'2022-3-22']
+=======
     # train split is majority of dataset, 2014-09:2022-03
     train = df.loc[:'2022-3-22']
     # validate split is second to last month of the dataset
+>>>>>>> f0970cd2b8b560cfb31af3385086661fcf42bcd3
     validate =df.loc['2022-03-23':'2022-04-23'] 
     return train, validate
 
