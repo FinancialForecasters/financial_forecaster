@@ -89,7 +89,7 @@ def finance_df():
     this function returns the yfinance.com, bitcoin trading data in a pandas dataframe.
     df is intended for modeling.
     '''
-	# pull df from root
+    # pull df from root
     df=csv_btcusd()
     # prepare df
     df=pre_cleaning(df)
@@ -378,14 +378,25 @@ def split_i(df):
     '''
     this function creates a train/ validate test set for time series analysis
     '''
+<<<<<<< HEAD
     train = df.loc[:'2022-3-22']
+=======
+    # train split is majority of dataset, 2014-09:2022-03
+    train = df.loc[:'2022-3-22']
+    # validate split is second to last month of the dataset
+>>>>>>> f0970cd2b8b560cfb31af3385086661fcf42bcd3
     validate =df.loc['2022-03-23':'2022-04-23'] 
     return train, validate
 
 def split_ii(df):
-	train = df.loc[:'2022-04-24']
-	test = df.loc['2022-04-25':]
-	return train, test
+    '''
+    this function creates a train/ validate test set for time series analysis
+    ''' 
+    # train split absorbs validate split from `split_i`
+    train = df.loc[:'2022-04-24']
+    # test split is last month of entire dataset
+    test = df.loc['2022-04-25':]
+    return train, test
 
     
 
@@ -521,3 +532,45 @@ def move_tweets_to_csv(all_tweets, filepath = './csv/tweets.csv'):
         
     temp_df.to_csv(filepath)
     print(f"Tweets saved to csv at {filepath}")
+
+def macd_plot(df):
+	plt.rc('font',size=20)
+	fig, ax1 = plt.subplots(figsize=(16, 9))
+
+	rect = fig.patch
+	rect.set_facecolor('white')
+	plt.rc('font',size=20)
+
+	color = 'tab:blue'
+	# ax1.set_xlabel('Date',size=16)
+	ax1.set_ylabel('"MACD" & "Signal" line', color = color,size=16)
+	ax1.yaxis.set_major_formatter('${x:1.2f}')
+
+	ax1.tick_params(axis ='y', labelcolor = color)
+
+	df.macd.tail(150).plot()
+	df.signal.tail(150).plot()
+	plt.stem(df.index[-150:],df['histo'].tail(150),linefmt='pink',markerfmt='w,',label='hist')
+
+	ax2 = ax1.twinx()
+	
+	color = 'black'
+	ax2.set_ylabel('BTC Daily Close Price', color = color,rotation=270, labelpad=30,size=16)
+	ax2.yaxis.set_major_formatter('${x:1.2f}')
+
+	ax2.tick_params(axis ='y', labelcolor = color)
+
+	_=df[(df.cross==1)&(df.histy==1)].tail(500)
+	plt.scatter(y=_.close,x=_.index,c='green')
+
+	_=df[(df.cross==1)&(df.histy==0)].tail(500)
+	plt.scatter(y=_.close,x=_.index,c='red')
+
+	df.close.tail(150).plot(color='black',alpha=.5)
+
+	ax1.legend(loc=2)
+	ax2.legend(loc=1)
+
+	plt.tight_layout()
+
+	plt.show()
