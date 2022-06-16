@@ -120,7 +120,7 @@ transaction-fees-to-miners | Value of all transaction fees paid to miners
     - Average next day returns are positive when current volatility measured by ATR is higher than historical volatility and in fact reach a peak when ATR is 20% greater than average. When volatility is greater than 20% above average returns decline and actually turn negative when volatility is very high.
     - Divergence between Twitter sentiment and Bitcoin's closing price may have helped a trader stay out of the market when prices were about to crash. 
     - Watching momentum via MACD can help us understand if a security is gaining or losing popularity in the market. Generally, positive momentum will drive the price higher while the opposite is also considered true. Positive momentum is indicated by a MACD value greater than the signal value.
-    - Returns are highly variable depending on the day of the week and the month. A few days show a statistically significant relationship with returns.
+    - Returns are highly variable depending on the day of the month and the month. Three specific days and two months show a statistically significant relationship with returns.
 
 ### 5. Modeling
 
